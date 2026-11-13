@@ -107,6 +107,17 @@ class HostBridge(private val service: CapriService) {
         "look:live" -> if (obj(args).optBoolean("on")) service.eyes.startLive() else service.eyes.stopLive().let { false }
         "look:changed" -> service.eyes.changed()
 
+        // Optional foreground screen assistance; invoked only after an explicit user command
+        "accessibility:settings" -> {
+            service.startActivity(android.content.Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK))
+            true
+        }
+        "accessibility:readVisible" -> CapriControlService.instance?.readVisibleText()
+            ?: JSONObject().put("error", "service_not_enabled")
+        "accessibility:clickVisible" -> CapriControlService.instance?.clickVisibleLabel(obj(args).optString("label"))
+            ?: "service_not_enabled"
+
         // her hooks, her sounds, links
         "hooks:copy" -> actions.copyHooksCommand(obj(args).optString("command"))
         "sounds:list" -> actions.sounds()
