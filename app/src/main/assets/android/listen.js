@@ -426,7 +426,7 @@ async function handle(text, { toggleVisible, visible }) {
   answer(said, mood(said));
 }
 
-const WEATHER_SEARCH = { es: 'clima hoy', en: 'weather today', fr: 'météo aujourd’hui', pt: 'previsão do tempo hoje', ru: 'погода сегодня' };
+const WEATHER_SEARCH = { it: 'meteo oggi', es: 'clima hoy', en: 'weather today', fr: 'météo aujourd’hui', pt: 'previsão do tempo hoje', ru: 'погода сегодня' };
 
 // one of her moves, by name, with a word about it
 async function moveFor(move, { capri, answer, t }) {
