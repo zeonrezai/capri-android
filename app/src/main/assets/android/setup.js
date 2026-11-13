@@ -14,6 +14,18 @@ const KEYED = ['groq', 'gemini', 'nvidia', 'openrouter', 'openai', 'mistral', 'd
 const NAMES = { groq: 'Groq', gemini: 'Gemini', nvidia: 'NVIDIA', openrouter: 'OpenRouter', openai: 'OpenAI', mistral: 'Mistral', deepseek: 'DeepSeek' };
 
 const LINES = {
+  it: {
+    whoHow: 'La soluzione più semplice è online, gratis e senza account. Un tocco e sei pronto.\nPer qualcosa di più affidabile: una chiave gratuita di Groq, Gemini o NVIDIA, oppure Ollama sul tuo PC tramite Wi-Fi.',
+    why: { noOllama: 'Non riesco a trovare Ollama sul tuo PC.', asleep: 'Ollama sul tuo PC non risponde.', noModel: 'Ollama sul tuo PC non ha ancora un modello.' },
+    online: 'Gratis, senza account', local: 'Ollama sul mio PC',
+    pasteHow: 'Tocca «Dove la trovo?», crea la chiave nel browser, copiala e incollala qui. La conservo cifrata su questo telefono.',
+    readyHow: 'Toccami quando vuoi fare due chiacchiere.',
+    pcLine: 'Qual è l’indirizzo IP del tuo PC?',
+    pcHow: 'Sul PC: apri Ollama, attiva «Expose Ollama to the network» nelle impostazioni e inserisci qui l’IP del computer. Entrambi devono essere sulla stessa rete Wi-Fi.',
+    pcNote: 'Sul PC trovi l’IP in Impostazioni › Rete. Sarà qualcosa come 192.168.1.20.',
+    pcBad: 'Nessuna risposta da quell’indirizzo.',
+    whichHow: 'Groq, Gemini e NVIDIA offrono un piano gratuito: basta un account e una chiave. NVIDIA mette a disposizione molti modelli.',
+  },
   es: {
     whoHow: 'Lo más fácil: en línea, gratis y sin cuenta. Un toque y listo.\nSi quieres algo mejor: una clave gratis de Groq, Gemini o NVIDIA, o el Ollama de tu PC por Wi-Fi.',
     why: { noOllama: 'No encuentro el Ollama de tu PC.', asleep: 'No encuentro el Ollama de tu PC.', noModel: 'El Ollama de tu PC aún no tiene ningún modelo.' },
