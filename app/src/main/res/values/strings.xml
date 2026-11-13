@@ -377,4 +377,7 @@
     <string name="report_off">Reports aren’t being received right now. Try again later.</string>
     <string name="report_net">No connection. Check your internet and try again.</string>
     <string name="report_bad">It couldn’t be sent. Try again later.</string>
+    <string name="capri_control_label">Capri screen assistance</string>
+    <string name="capri_control_description">Reads visible text or clicks one visible item only when explicitly requested.</string>
+    <string name="capri_control_summary">Optional. Does not continuously collect screen contents.</string>
 </resources>
