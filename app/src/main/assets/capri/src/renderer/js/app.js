@@ -53,6 +53,8 @@ async function boot() {
     document.fonts.load('600 16px "Chakra Petch"'),
     document.fonts.load('400 11px "JetBrains Mono"'),
   ]);
+  // Capri on Android speaks Italian by default; persist it so speech recognition, TTS and chat agree.
+  if (config.lang !== 'it') { config.lang = 'it'; await host.setConfig({ lang: 'it' }); }
   document.documentElement.lang = config.lang;
   // her animations: like Windows, full or reduced (her menu)
   const applyMotion = (setting) => {
