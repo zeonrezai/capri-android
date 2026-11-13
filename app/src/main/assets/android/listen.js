@@ -159,7 +159,7 @@ const WORDS = {
     help: "Могу сказать время, включить музыку, открыть приложения, поставить таймер и напоминание, посмотреть на экран, потанцевать… Полный список в приложении, вкладка «Команды».",
   },
 };
-const LOCALES = { es: 'es-MX', en: 'en-US', fr: 'fr-FR', pt: 'pt-BR', ru: 'ru-RU' };
+const LOCALES = { it: 'it-IT', es: 'es-MX', en: 'en-US', fr: 'fr-FR', pt: 'pt-BR', ru: 'ru-RU' };
 
 // the phone's own quick things, in each of her languages (Spanish, English, French, Portuguese,
 // Russian). \b doesn't see Cyrillic or accents: (?![\p{L}]) does
