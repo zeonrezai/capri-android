@@ -127,6 +127,20 @@
             android:name=".Updater$InstallResult"
             android:exported="false" />
 
+        <!-- Optional foreground screen reading/clicks, only when the user enables it -->
+        <service
+            android:name=".CapriControlService"
+            android:exported="true"
+            android:label="@string/capri_control_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/capri_control" />
+        </service>
+
         <!-- Capri peeking in your notification panel (1.9.0): off unless you turn it on in Android's
              Accessibility settings; it's only told when that panel opens (res/xml/capri_peek.xml) -->
         <service
