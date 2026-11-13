@@ -301,6 +301,54 @@ async function handle(text, { toggleVisible, visible }) {
     return answer(t.closet, 'smug');
   }
 
+
+  // Italian personal-assistant commands. They open apps/drafts; they never send or purchase.
+  let m = /^(?:cerca|cercami) (.+?) su spotify$/iu.exec(text);
+  if (m) {
+    const ok = await call('spotify:search', { query: m[1] }).catch(() => false);
+    return answer(ok ? 'Apro la ricerca su Spotify.' : t.cant, ok ? 'smug' : 'aside');
+  }
+  m = /^(?:cerca|cercami) (.+?) su youtube$/iu.exec(text);
+  if (m) {
+    const ok = await call('youtube:search', { query: m[1] }).catch(() => false);
+    return answer(ok ? 'Apro i risultati su YouTube.' : t.cant, ok ? 'smug' : 'aside');
+  }
+  m = /^(?:portami|naviga|vai) (?:a|verso) (.+)$/iu.exec(text);
+  if (m) {
+    const ok = await call('maps:navigate', { destination: m[1] }).catch(() => false);
+    return answer(ok ? 'Apro la navigazione.' : t.cant, ok ? 'smug' : 'aside');
+  }
+  m = /^(?:apri|avvia) (?:l'app )?(.+)$/iu.exec(text);
+  if (m) {
+    const result = await call('apps:openByName', { name: m[1] }).catch(() => 'failed');
+    if (typeof result === 'string' && result.startsWith('opened:')) return answer('Apro ' + result.slice(7) + '.', 'smug');
+    if (typeof result === 'string' && result.startsWith('ambiguous:')) return answer('Ho trovato più app: ' + result.slice(10), 'aside');
+    return answer('Non trovo un’app con quel nome.', 'aside');
+  }
+  m = /^(?:scrivi|prepara) (?:un )?messaggio whatsapp(?: dicendo)?\s+(.+)$/iu.exec(text);
+  if (m) {
+    const ok = await call('whatsapp:draft', { message: m[1] }).catch(() => false);
+    return answer(ok ? 'Ho preparato il messaggio in WhatsApp. Scegli tu il destinatario e invialo quando vuoi.' : t.cant, ok ? 'smug' : 'aside');
+  }
+  if (/^(?:leggi|leggimi|cosa c['’]è scritto|che cosa c['’]è scritto) (?:sullo )?(?:schermo|schermata|display)|^leggi questa schermata$/iu.test(text)) {
+    const visibleText = await call('accessibility:readVisible', {}).catch(() => '');
+    if (typeof visibleText !== 'string' || !visibleText.trim()) {
+      return answer('Per leggere il testo devi attivare il servizio di accessibilità di Capri nelle impostazioni Android.', 'aside');
+    }
+    await chat.start();
+    if (chat.open) chat.send('Interpreta questo testo visibile sullo schermo e aiutami in italiano. Non inventare informazioni mancanti.\\n\\n' + visibleText.slice(0, 5000));
+    return;
+  }
+  m = /^(?:tocca|premi|seleziona) (.+)$/iu.exec(text);
+  if (m) {
+    const result = await call('accessibility:clickVisible', { label: m[1] }).catch(() => 'click_failed');
+    if (result === 'clicked') return answer('Fatto.', 'smug');
+    if (result === 'service_not_enabled') return answer('Attiva prima il servizio di accessibilità di Capri nelle impostazioni Android.', 'aside');
+    if (result === 'sensitive_action_blocked') return answer('Non eseguo direttamente invii, cancellazioni, pagamenti o conferme.', 'aside');
+    if (result === 'not_unique') return answer('Ci sono più elementi con quel nome: non ne seleziono nessuno.', 'aside');
+    return answer('Non sono riuscita a premere quell’elemento.', 'aside');
+  }
+
   // her own moves
   const words = text.split(/\s+/).length;
   const move = words <= 5 && !/canci|song|chanson|m[uú]sica|music|faixa|песн|трек|v[ií]deo/iu.test(text) && MOVES.find(([, re]) => re.test(text))?.[0];
