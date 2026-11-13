@@ -16,7 +16,7 @@ object Lang {
      * its code here, and it shows up in Ajustes with its own name. (Her own lines, in her page,
      * come in the same five, from the desktop's lines.js.)
      */
-    val LANGS = listOf("es", "en", "fr", "pt", "ru")
+    val LANGS = listOf("it", "es", "en", "fr", "pt", "ru")
 
     /** A language in its own words: "Español", "English", "Français"… */
     fun name(code: String): String {
