@@ -36,6 +36,8 @@ const WORDS = {
     closet: 'Ecco il mio guardaroba. Cosa mi metto?',
     call: 'Ti apro il telefono{who}.',
     cant: 'Non sono riuscita a farlo su questo telefono.',
+    appOpened: 'Eccolo! Ho aperto {app}.',
+    appMissing: 'Non trovo {app} tra le app installate.',
     help: 'Posso dirti l’ora, riprodurre musica, aprire app, impostare timer e promemoria, guardare lo schermo, ballare… La lista completa è nella scheda Comandi.',
   },
   es: {
@@ -361,6 +363,16 @@ async function handle(text, { toggleVisible, visible }) {
   if (GAMER_ASK.test(text)) return window.host.setConfig({ gamer: true });
   // streaming mode: her co-hosting your live (stream.js), on or off
   if (dev.stream?.wants(text)) return dev.stream.set(!OFF_ASK.test(text));
+
+  // Open an installed Android app directly; do not send this simple action to the AI.
+  const openApp = /^(?:per favore\s+)?(?:apri|avvia|lancia|esegui|start|open)\s+(?:l['’]app(?:licazione)?\s+(?:di\s+)?)?(.+?)\s*[.!?]*$/iu.exec(text);
+  if (openApp && !/^(?:le impostazioni|impostazioni|settings)$/iu.test(openApp[1].trim())) {
+    const requested = openApp[1].trim().replace(/^(?:app(?:licazione)?\s+)?(?:di\s+)?/iu, '');
+    const item = await window.host.findLaunch(requested).catch(() => null);
+    if (!item) return answer(fill(t.appMissing, { app: requested }), 'aside');
+    const result = await window.host.launch(item).catch((err) => ({ ok: false, error: err.message }));
+    return answer(result?.ok ? fill(t.appOpened, { app: item.name }) : t.cant, result?.ok ? 'laugh' : 'aside');
+  }
 
   // her chat open: what you said goes into it, as if you typed it
   if (chat.open) return chat.send(text);
