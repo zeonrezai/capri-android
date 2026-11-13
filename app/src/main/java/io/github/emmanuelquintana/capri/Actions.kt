@@ -259,6 +259,73 @@ class Actions(private val context: Context, private val store: Store) {
         return JSONObject().put("level", Math.round(now * 100f / max))
     }
 
+
+    // Personal integrations: open the relevant app/search UI; the user remains in control of final actions.
+    fun navigate(destination: String): Boolean {
+        val q = destination.trim()
+        if (q.isEmpty() || q.length > 300) return false
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=${Uri.encode(q)}"))
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        return try { context.startActivity(intent); true }
+        catch (_: Exception) {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=${Uri.encode(q)}"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            true
+        }
+    }
+
+    fun youtubeSearch(query: String): Boolean {
+        val q = query.trim()
+        if (q.isEmpty() || q.length > 300) return false
+        openUrl("https://www.youtube.com/results?search_query=${Uri.encode(q)}")
+        return true
+    }
+
+    fun spotifySearch(query: String): Boolean {
+        val q = query.trim()
+        if (q.isEmpty() || q.length > 300) return false
+        return try {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("spotify:search:${Uri.encode(q)}"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            true
+        } catch (_: Exception) {
+            openUrl("https://open.spotify.com/search/${Uri.encode(q)}")
+            true
+        }
+    }
+
+    fun whatsappDraft(message: String): Boolean {
+        val body = message.trim()
+        if (body.isEmpty() || body.length > 4000) return false
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, body)
+            setPackage("com.whatsapp")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        return try { context.startActivity(intent); true }
+        catch (_: Exception) {
+            val chooser = Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"; putExtra(Intent.EXTRA_TEXT, body)
+            }, "Condividi con…").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(chooser)
+            true
+        }
+    }
+
+    fun openAppByName(rawName: String): String {
+        val name = rawName.trim()
+        if (name.isEmpty() || name.length > 100) return "invalid_name"
+        val matches = launchables().let { arr ->
+            (0 until arr.length()).mapNotNull { i -> arr.optJSONObject(i) }
+                .filter { it.optString("name").contains(name, ignoreCase = true) }
+        }
+        if (matches.size != 1) return if (matches.isEmpty()) "not_found" else
+            "ambiguous:" + matches.joinToString(", ") { it.optString("name") }
+        launch(matches.single())
+        return "opened:" + matches.single().optString("name")
+    }
+
     companion object {
         const val TERMUX = "com.termux"
         private val SOUND_EXT = Regex("\\.(mp3|wav|ogg|m4a)$", RegexOption.IGNORE_CASE)
