@@ -557,6 +557,7 @@ class Ears(private val service: CapriService) {
             "es" -> accent("es-MX")
             "en" -> accent("en-US")
             "fr" -> accent("fr-FR")
+            "it" -> accent("it-IT")
             "pt" -> accent("pt-BR")
             "ru" -> "ru-RU"
             else -> Locale.getDefault().toLanguageTag()
