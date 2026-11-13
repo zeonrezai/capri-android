@@ -8,6 +8,36 @@ import { on, send, call } from './native.js';
 import { clean, mood } from '../capri/src/renderer/js/chat.js';
 
 const WORDS = {
+  it: {
+    yes: ['Sì?', 'Dimmi.', 'Sono qui.', 'Che ti serve, choom?'],
+    time: ["Sono le {time}.", "Sono le {time}, choom.", "Il mio orologio dice {time}."],
+    date: 'Oggi è {date}.',
+    torchOn: 'Torcia accesa.',
+    torchOff: 'Torcia spenta.',
+    noTorch: 'Questo telefono non mi permette di usare la torcia.',
+    back: 'Eccomi.',
+    iconOn: 'Divento un’icona. Continuerò a parlarti da qui.',
+    iconOff: 'Sono tornata!',
+    bye: 'Mi nascondo. Dimmi «Capri, torna» e ricomparirò.',
+    deaf: 'Smetto di ascoltare. Puoi riattivarmi nelle Impostazioni.',
+    thinking: '…',
+    wait: ['Fammi pensare…', 'Quasi fatto, l’IA è un po’ lenta in questo momento.'],
+    failed: 'Non riesco a risponderti adesso.',
+    late: 'Si è fatto tardi, non dovresti dormire?',
+    moves: ['Guarda qua!', 'Ecco che arrivo!', 'Volevi uno spettacolo.'],
+    dance: 'Si balla!',
+    sleepy: 'Mi faccio un pisolino. Toccami per svegliarmi.',
+    awake: 'Sono sveglia!',
+    play: 'Faccio partire la riproduzione.',
+    weather: 'Ti apro le previsioni di oggi.',
+    shot: 'Per uno screenshot: premi insieme accensione e volume giù. Mi tolgo di mezzo.',
+    radio: 'Android non permette alle app di attivare o disattivare queste funzioni da sole: ti apro il pannello, basta un tocco.',
+    settings: 'Ti apro le impostazioni.',
+    closet: 'Ecco il mio guardaroba. Cosa mi metto?',
+    call: 'Ti apro il telefono{who}.',
+    cant: 'Non sono riuscita a farlo su questo telefono.',
+    help: 'Posso dirti l’ora, riprodurre musica, aprire app, impostare timer e promemoria, guardare lo schermo, ballare… La lista completa è nella scheda Comandi.',
+  },
   es: {
     yes: ['¿Sí?', 'Dime.', 'Aquí estoy.', '¿Qué se te ofrece, choom?'],
     time: ["Son las {time}.", "Son las {time}, choom.", "Mi reloj dice {time}."],
@@ -159,25 +189,25 @@ const WORDS = {
     help: "Могу сказать время, включить музыку, открыть приложения, поставить таймер и напоминание, посмотреть на экран, потанцевать… Полный список в приложении, вкладка «Команды».",
   },
 };
-const LOCALES = { es: 'es-MX', en: 'en-US', fr: 'fr-FR', pt: 'pt-BR', ru: 'ru-RU' };
+const LOCALES = { it: 'it-IT', es: 'es-MX', en: 'en-US', fr: 'fr-FR', pt: 'pt-BR', ru: 'ru-RU' };
 
 // the phone's own quick things, in each of her languages (Spanish, English, French, Portuguese,
 // Russian). \b doesn't see Cyrillic or accents: (?![\p{L}]) does
-const TIME_ASK = /qu[eé] hora|la hora|what time|the time|quelle heure|que horas|котор(?:ый|ого) час|сколько времени/iu;
-const DATE_ASK = /qu[eé] d[ií]a|qu[eé] fecha|la fecha|what day|the date|what's the date|quel jour|quelle date|que dia|qual (?:é )?a data|какое (?:сегодня )?число|какой (?:сегодня )?день/iu;
-const TORCH = /linterna|l[aá]mpara|flash|torch|flashlight|lampe|torche|lanterna|фонар/iu;
-const OFF = /apaga|desactiva|quita|turn off|switch off|\boff\b|[ée]teins|d[ée]sactive|desliga|выключи|погаси/iu;
-const ON = /enciende|prende|activa|pon|turn on|switch on|\bon\b|allume|active|liga|acende|включи/iu;
-const HIDE_ASK = /^(?:esc[oó]ndete|vete|desaparece|ocúltate|ocultate|hide|go away|get lost|cache-toi|va-t[’']en|dispara[iî]s|(?:se )?esconde|some daqui|спрячься|уйди|исчезни)(?![\p{L}])/iu;
-const SHOW_ASK = /^(?:ven|aparece|regresa|vuelve|mu[eé]strate|sal|come back|come here|show up|appear|reviens|viens|appara[iî]s|volta|vem|вернись|появись|иди сюда)(?![\p{L}])/iu;
-const DEAF_ASK = /deja de escuchar|no me escuches|stop listening|arr[êe]te d[’']?[ée]couter|para de (?:escutar|ouvir)|не слушай|перестань слушать/iu;
+const TIME_ASK = /che ore sono|che ora [eè]|l[’']ora|qu[eé] hora|la hora|what time|the time|quelle heure|que horas|котор(?:ый|ого) час|сколько времени/iu;
+const DATE_ASK = /che giorno [eè]|che data [eè]|la data|qu[eé] d[ií]a|qu[eé] fecha|la fecha|what day|the date|what's the date|quel jour|quelle date|que dia|qual (?:é )?a data|какое (?:сегодня )?число|какой (?:сегодня )?день/iu;
+const TORCH = /torcia|luce|linterna|l[aá]mpara|flash|torch|flashlight|lampe|torche|lanterna|фонар/iu;
+const OFF = /spegni|disattiva|togli|apaga|desactiva|quita|turn off|switch off|\boff\b|[ée]teins|d[ée]sactive|desliga|выключи|погаси/iu;
+const ON = /accendi|attiva|metti|enciende|prende|activa|pon|turn on|switch on|\bon\b|allume|active|liga|acende|включи/iu;
+const HIDE_ASK = /^(?:nasconditi|sparisci|vattene|esc[oó]ndete|vete|desaparece|ocúltate|ocultate|hide|go away|get lost|cache-toi|va-t[’']en|dispara[iî]s|(?:se )?esconde|some daqui|спрячься|уйди|исчезни)(?![\p{L}])/iu;
+const SHOW_ASK = /^(?:torna|vieni|fatti vedere|ricompari|ven|aparece|regresa|vuelve|mu[eé]strate|sal|come back|come here|show up|appear|reviens|viens|appara[iî]s|volta|vem|вернись|появись|иди сюда)(?![\p{L}])/iu;
+const DEAF_ASK = /smetti di ascoltare|non ascoltarmi|deja de escuchar|no me escuches|stop listening|arr[êe]te d[’']?[ée]couter|para de (?:escutar|ouvir)|не слушай|перестань слушать/iu;
 export const GAMER_ASK = /modo gamer|modo juego|voy a jugar|gamer mode|gaming mode|mode gamer|mode jeu|vou jogar|игровой режим|режим игры/iu;
 // her icon mode (icon.js): on, or off ("sal del ícono", "quita el modo ícono")
 export const ICON_ASK = /modo [ií]cono|hazte (?:un )?[ií]cono|en (?:tu )?[ií]cono|del [ií]cono|icon mode|as an icon|mode ic[ôo]ne|du mode ic[ôo]ne|modo [ií]cone|do [ií]cone|режим[а-я]* (?:иконки|значка)|из иконки|иконкой/iu;
 // "off" for gamer and icon mode, in her languages
 export const OFF_ASK = /quita|apaga|sin |desactiva|salir|sal |sal$|sal del|off|stop|leave|exit|d[ée]sactive|quitte|sors|desativa|desliga|sai |sai$|sai do|выключи|выйди|убери/iu;
 export const iconOff = (text) => OFF_ASK.test(text);
-const CHAT_ASK = /^(?:abre (?:el |tu )?chat|hablemos|quiero hablar|platiquemos|open (?:the |your )?chat|let'?s talk|ouvre (?:le |ton )?chat|parlons|abre o chat|vamos conversar|открой чат|давай поговорим)(?![\p{L}])/iu;
+const CHAT_ASK = /^(?:apri (?:la )?chat|parliamo|voglio parlare|abre (?:el |tu )?chat|hablemos|quiero hablar|platiquemos|open (?:the |your )?chat|let'?s talk|ouvre (?:le |ton )?chat|parlons|abre o chat|vamos conversar|открой чат|давай поговорим)(?![\p{L}])/iu;
 const LOOK_ASK = /mira (?:mi|la) pantalla|qu[ée] (?:ves|hay en mi pantalla)|look at my screen|what do you see|regarde (?:mon|l[’']) ?[ée]cran|olha (?:minha|a) tela|посмотри на (?:мой )?экран/iu;
 // her own moves, asked plainly ("Capri, baila"): only when that's about all you said
 const MOVES = [
@@ -202,7 +232,7 @@ const RADIO_PAGE = [['bluetooth', /bluetooth|блютуз/i], ['data', /datos|da
 const RADIO_VERB = /prende|enciende|activa|apaga|desactiva|quita|pon|turn|switch|enable|disable|allume|[ée]teins|active|d[ée]sactive|liga|desliga|ativa|desativa|включи|выключи|ajustes|settings|r[ée]glages|configura|настройк/iu;
 const CALL_ASK = /^(?:llama(?:le)? a|marca(?:le)? a|call|phone|appelle|liga(?: para| pra)?|позвони)\s*(.*)$/iu;
 const WARDROBE_ASK = /(?:vest[ií]te|v[ií]stete|c[aá]mbiate de ropa|(?:abre|muestra|ens[eé][ñn]a(?:me)?) (?:tu|el) (?:vestuario|ropa|armario|closet)|tu vestuario|change (?:your )?clothes|get dressed|(?:open|show)(?: me)? your (?:wardrobe|closet|clothes)|your wardrobe|habille[- ]toi|change de v[eê]tements|(?:ouvre|montre)(?:[- ]moi)? ta garde[- ]robe|ta garde[- ]robe|troca de roupa|se veste|(?:abre|mostra)(?: o)? (?:teu|seu) guarda[- ]roupa|guarda[- ]roupa|переоденься|оденься|(?:открой|покажи) (?:свой )?гардероб|гардероб)/iu;
-const HELP_ASK = /^(?:qu[ée] (?:puedes|sabes) hacer|ayuda|comandos|what can you do|help|commands|qu['’]est-ce que tu sais faire|aide|commandes|o que voc[êe] (?:pode|sabe) fazer|ajuda|comandos|что ты умеешь|помощь|команды)(?![\p{L}])/iu;
+const HELP_ASK = /^(?:cosa sai fare|che cosa sai fare|aiuto|comandi|qu[ée] (?:puedes|sabes) hacer|ayuda|comandos|what can you do|help|commands|qu['’]est-ce que tu sais faire|aide|commandes|o que voc[êe] (?:pode|sabe) fazer|ajuda|comandos|что ты умеешь|помощь|команды)(?![\p{L}])/iu;
 
 // what's left of her name at the start, as the recognizer may write it (Капри in Russian)
 // (and whatever came before it: "oye Capri", "ok Kapri")
