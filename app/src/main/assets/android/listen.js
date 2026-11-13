@@ -258,7 +258,8 @@ const fill = (line, vars) => line.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '')
 async function handle(text, { toggleVisible, visible }) {
   const dev = window.dev;
   const { capri, panel, chat, brain } = dev;
-  const lang = WORDS[brain.lang] ? brain.lang : 'en';
+  // Capri's spoken interface is Italian in this personal build, independently of the UI language.
+  const lang = 'it';
   const t = WORDS[lang];
   const locale = LOCALES[lang];
 
@@ -441,7 +442,7 @@ async function handle(text, { toggleVisible, visible }) {
   const id = Date.now();
   const note = `(Note for you, never repeat it: this was said out loud and your answer will be read out loud. Answer in Italian, in one or two short sentences, plain spoken words, no lists, no English unless the user explicitly asks for it. ${chat.languageNote()})`;
   const messages = [
-    { role: 'system', content: chat.persona() },
+    { role: 'system', content: `${chat.persona()}\n\nFor every spoken request, answer exclusively in natural Italian. Never switch to English unless the user explicitly asks you to.` },
     ...chat.history.slice(-6),
     { role: 'user', content: `${text}\n\n${note}` },
   ];
