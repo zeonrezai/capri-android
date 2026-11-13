@@ -131,6 +131,11 @@ class HostBridge(private val service: CapriService) {
         "apps:launchables" -> actions.launchables()
         "apps:launch" -> actions.launch(obj(args))
         "apps:media" -> actions.media(args as? String ?: "")
+        "maps:navigate" -> actions.navigate(obj(args).optString("destination"))
+        "youtube:search" -> actions.youtubeSearch(obj(args).optString("query"))
+        "spotify:search" -> actions.spotifySearch(obj(args).optString("query"))
+        "whatsapp:draft" -> actions.whatsappDraft(obj(args).optString("message"))
+        "apps:openByName" -> actions.openAppByName(obj(args).optString("name"))
         // your notifications and your music (CapriNotifications.kt), once you allow it
         "notes:allowed" -> CapriNotifications.allowed(service)
         "notes:settings" -> actions.notificationAccess()
