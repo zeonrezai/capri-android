@@ -409,10 +409,10 @@ async function handle(text, { toggleVisible, visible }) {
   if (!status.ok) return chat.start(); // nothing to talk with yet: her setup
   panel.say({ kind: 'info', face: 'aside', line: t.thinking, quote: text, hold: null });
   const id = Date.now();
-  const note = `(Note for you, never repeat it: this was said out loud and your answer will be read out loud, so answer in one to three short sentences, plain words, no lists. ${chat.languageNote()})`;
+  const note = `(Note for you, never repeat it: this was said out loud and your answer will be read out loud. Answer in Italian, in one or two short sentences, plain spoken words, no lists, no English unless the user explicitly asks for it. ${chat.languageNote()})`;
   const messages = [
     { role: 'system', content: chat.persona() },
-    ...chat.history.slice(-20),
+    ...chat.history.slice(-6),
     { role: 'user', content: `${text}\n\n${note}` },
   ];
   // a slow answer (the free AI gives one every 45 s): she says out loud that she heard you
